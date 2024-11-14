@@ -1,1 +1,2 @@
-yarn install && yarn start
+1. cp .env.example .env
+2. yarn install && yarn start
