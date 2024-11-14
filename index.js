@@ -6,18 +6,28 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 // Define the URL of the page to scrape.
-const URL = "https://scrapeme.live/shop/";
+const URL = "https://www.bolha.com/oddaja-stanovanja";
 
 // Define the queries to locate the search box and fetch the stock number.
 const SEARCH_QUERY = `
 {
-    search_products_box
-}
-`;
-
-const STOCK_NUMBER_QUERY = `
-{
-    number_in_stock
+  apartments[] {
+    name
+    description
+    areaMetersSquared
+    availabilityDate
+    monthlyPriceEuros
+    utilityCostsEuros
+    securityDepositEuros
+    location {
+      address
+      city
+    }
+    imageUrl
+    linkToListing
+    contactTelephone
+    postedOnDate
+  }
 }
 `;
 
@@ -33,16 +43,27 @@ const STOCK_NUMBER_QUERY = `
   const page = await wrap(await browser.newPage());
   await page.goto(URL);
 
+  const closeCookieNoticeButton = await page.waitForSelector("#didomi-notice-agree-button", {
+    timeout: 2000,
+  });
+
+  if (closeCookieNoticeButton) {
+    await closeCookieNoticeButton.click();
+  }
+
   // Use queryElements() method to locate the search box from the page.
+  console.log("querying...");
   const searchResponse = await page.queryElements(SEARCH_QUERY);
 
-  // Use Playwright's API to fill the search box and press Enter.
-  await searchResponse.search_products_box.fill("Charmander");
-  await page.keyboard.press("Enter");
-
-  // Use queryData() method to fetch the stock number from the page.
-  const stockResponse = await page.queryData(STOCK_NUMBER_QUERY);
-  console.log(stockResponse);
-
+  console.log("done");
   await browser.close();
+
+  const fs = require("fs");
+  fs.mkdirSync("output", { recursive: true });
+  fs.writeFileSync(
+    "output/apartments.json",
+    JSON.stringify(searchResponse, null, 2)
+  );
+
+  console.log("Apartments data has been saved to apartments.json file.");
 })();
