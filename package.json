@@ -1,0 +1,12 @@
+{
+  "name": "query-llm-apartment",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "hktari <bkamnik1995@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "agentql": "^1.5.0",
+    "dotenv": "^16.4.5",
+    "playwright": "^1.48.2"
+  }
+}
